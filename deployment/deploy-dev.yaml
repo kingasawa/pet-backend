@@ -1,0 +1,82 @@
+#Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nestjs-10-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nestjs-10-app
+  template:
+    metadata:
+      labels:
+        app: nestjs-10-app
+    spec:
+      containers:
+        - name: nestjs-10-app
+          image: gcr.io/ceremonial-team-424503-u1/nestjs-10-app:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: db-config-secret
+          volumeMounts:
+            - name: cloudsql-sockets
+              mountPath: /cloudsql
+        - name: cloud-sql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.19.1
+          command:
+            - "/cloud_sql_proxy"
+            - "-dir=/cloudsql"
+            - "-instances=ceremonial-team-424503-u1:asia-northeast1:nestjs-10-sql=tcp:3306"
+            - "-credential_file=/secrets/credentials.json"
+          securityContext:
+            runAsNonRoot: true
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets
+              readOnly: true
+            - name: cloudsql-sockets
+              mountPath: /cloudsql
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: cloudsql-sockets
+          emptyDir: {}
+---
+#Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nestjs-10-service
+spec:
+  selector:
+    app: nestjs-10-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: NodePort
+---
+#Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nestjs-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    networking.gke.io/managed-certificates: simplecode-online-cert
+spec:
+  rules:
+    - host: simplecode.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nestjs-10-service
+                port:
+                  number: 80
