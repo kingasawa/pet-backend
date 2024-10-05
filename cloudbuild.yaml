@@ -11,3 +11,5 @@ steps:
     args: ['gcloud', 'app', 'deploy', '--quiet']
 
 timeout: "1600s"
+options:
+  logging: CLOUD_LOGGING_ONLY
