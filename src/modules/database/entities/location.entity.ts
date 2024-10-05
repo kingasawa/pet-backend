@@ -13,11 +13,14 @@ class LocationEntity extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
+  @Column({ nullable: true })
+  address: string;
+
   @Column({ nullable: false })
   latitude: string;
 
-  @Column({ default: false })
-  longitude: boolean;
+  @Column({ nullable: false })
+  longitude: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.locations)
   @JoinColumn({ name: 'category_id' })

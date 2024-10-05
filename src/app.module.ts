@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UserService } from '@modules/user/user.service';
+import { LocationService } from '@modules/location/location.service';
 import { UserModule } from '@modules/user/user.module';
 import { LocationModule } from '@modules/location/location.module';
 import { CategoryModule } from '@modules/category/category.module';
@@ -31,6 +32,6 @@ import { MailModule } from '@modules/mailer/mail.module';
     MailModule
   ],
   controllers: [AppController],
-  providers: [AppService, UserService, AssemblyService, EventGateway],
+  providers: [AppService],
 })
 export class AppModule {}

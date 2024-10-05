@@ -16,7 +16,7 @@ export class LocationController {
   @Post('/add')
   async add(@Request() req, @Response() res) {
     try {
-      const added = await this.locationService.register(req.body);
+      const added = await this.locationService.add(req.body);
       return res.status(200).send(added)
     } catch (error) {
       return res.send(error)

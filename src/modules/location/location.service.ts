@@ -1,40 +1,52 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import UserEntity from '@modules/database/entities/user.entity';
-import { encrypt } from '@shared/common/helper';
+import CategoryEntity from '@modules/database/entities/category.entity';
 import { ERROR_MESSAGES } from '@shared/common/constants';
 import LocationEntity from '@modules/database/entities/location.entity';
+import { CreateLocationDto } from '@modules/location/dto/location.dto';
 
 @Injectable()
 export class LocationService {
   constructor(
-    @InjectRepository(LocationEntity)
-    private locationRepository: Repository<LocationEntity>,
+    @InjectRepository(LocationEntity) private readonly locationRepository: Repository<LocationEntity>,
+    @InjectRepository(CategoryEntity) private readonly categoryRepository: Repository<CategoryEntity>,
   ) {}
 
   async findAll(): Promise<LocationEntity[]> {
     return this.locationRepository.find();
   }
 
-  // async fetchLocation(email: string): Promise<LocationEntity> {
-  //   return this.locationRepository.findOne({
-  //     where: {
-  //       email,
-  //     }
-  //   });
-  // }
+  async fetchLocation(title: string): Promise<LocationEntity> {
+    return this.locationRepository.findOne({
+      where: {
+        title,
+      }
+    });
+  }
 
-  public async add(payload: LocationEntity): Promise<any> {
-    // const checkExisting = await this.fetchLocation(payload.email);
-    // if (checkExisting) {
-    //   return {
-    //     error: true,
-    //     user: {},
-    //     message: 'Email này đã được đăng ký',
-    //   };
-    // }
-    const locationEntity: LocationEntity = this.locationRepository.create(payload);
+  public async add(payload: CreateLocationDto): Promise<any> {
+    const checkExisting = await this.fetchLocation(payload.title);
+    if (checkExisting) {
+      return {
+        error: true,
+        location: {},
+        message: 'Địa điểm này đã được đăng ký',
+      };
+    }
+
+    const categoryEntity: CategoryEntity = await this.categoryRepository.findOne({ where: { id: payload.category } });
+
+    if (!categoryEntity) {
+      throw new BadRequestException({ message: ERROR_MESSAGES.DATA_NOT_FOUND });
+    }
+
+    // const locationEntity: LocationEntity = this.locationRepository.create(payload);
+    const locationEntity: LocationEntity = <LocationEntity>{
+      ...payload,
+      category: categoryEntity,
+    }
+
     await this.locationRepository.save(locationEntity)
     return {
       error: false,
