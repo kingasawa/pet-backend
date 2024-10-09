@@ -1,3 +1,4 @@
+service: pet-backend
 runtime: nodejs
 env: flex
 
