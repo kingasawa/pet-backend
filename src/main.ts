@@ -32,7 +32,8 @@ async function bootstrap() {
     console.log('id', id);
     done(null, id);
   });
-  console.log(`NestJS v2 đang chạy trên port 8080`);
-  await app.listen(8080);
+  const port = process.env.PORT || 8080;
+  console.log(`NestJS v2 đang chạy trên port ${port}`);
+  await app.listen(port);
 }
 bootstrap();
