@@ -25,6 +25,5 @@ npm-debug.log*
 
 # IDE - VSCode
 development.env
-.env
-.env.*
+
 ormconfig.json
