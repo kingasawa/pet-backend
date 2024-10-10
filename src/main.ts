@@ -34,6 +34,7 @@ async function bootstrap() {
   });
   const port = process.env.PORT || 3000;
   console.log(`NestJS v2 đang chạy trên port ${port}`);
+  console.log('process.env', process.env);
   await app.listen(port);
 }
 bootstrap();
