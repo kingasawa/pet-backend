@@ -1,6 +1,5 @@
-service: pet-backend
 runtime: nodejs
-env: flex
+env: standard
 runtime_config:
   operating_system: ubuntu22
 # This sample incurs costs to run on the App Engine flexible environment.
@@ -11,7 +10,7 @@ manual_scaling:
   instances: 1
 resources:
   cpu: 1
-  memory_gb: 0.5
+  memory_gb: 2
   disk_size_gb: 10
 
 handlers:
@@ -22,3 +21,10 @@ handlers:
 
 env_variables:
   NODE_ENV: production
+  DATABASE_HOST: aws-0-ap-southeast-1.pooler.supabase.com
+  DATABASE_PORT: 6543
+  DATABASE_USERNAME: postgres.qieglqtaipowevvwsbox
+  DATABASE_PASSWORD: "Tu)!Tr#H4ck"
+  DATABASE_NAME: postgres
+  EMAIL_ID: trancatkhanh280483@gmail.com
+  EMAIL_PASSWORD: pwmwgnxrctaqrtsc
