@@ -4,13 +4,15 @@ import { Repository } from 'typeorm';
 import CategoryEntity from '@modules/database/entities/category.entity';
 import { ERROR_MESSAGES } from '@shared/common/constants';
 import LocationEntity from '@modules/database/entities/location.entity';
-import { CreateLocationDto } from '@modules/location/dto/location.dto';
+import { CreateLocationDto, BulkCreateLocationDto } from '@modules/location/dto/location.dto';
+import { MapService } from '@modules/services/maps.service';
 
 @Injectable()
 export class LocationService {
   constructor(
     @InjectRepository(LocationEntity) private readonly locationRepository: Repository<LocationEntity>,
     @InjectRepository(CategoryEntity) private readonly categoryRepository: Repository<CategoryEntity>,
+    private readonly mapService: MapService
   ) {}
 
   async findAll(): Promise<LocationEntity[]> {
@@ -27,7 +29,7 @@ export class LocationService {
 
   public async add(payload: CreateLocationDto): Promise<any> {
     const checkExisting = await this.fetchLocation(payload.title);
-    if (checkExisting) {
+    if (!checkExisting) {
       return {
         error: true,
         location: {},
@@ -53,6 +55,36 @@ export class LocationService {
       location: locationEntity,
       message: 'Success',
     };
+  }
+
+  public async bulkAdd(payload: BulkCreateLocationDto): Promise<any> {
+    const { key, userLocation, token } = payload;
+    const data = await this.mapService.searchPlace(key, userLocation, token);
+    await Promise.all(
+      data.results.map(async(item: any) => {
+        let categoryEntity: CategoryEntity = await this.categoryRepository.findOne({ where: { title: item.poiCategory } });
+        console.log('categoryEntity', categoryEntity);
+        if (!categoryEntity) {
+          const category: CategoryEntity = <CategoryEntity>{
+            title: item.poiCategory,
+          }
+          categoryEntity = await this.categoryRepository.save(category);
+        }
+        const location: LocationEntity = await this.locationRepository.findOne({ where: { locationId: item.id } });
+        if (!location) {
+          const locationEntity: LocationEntity = <LocationEntity>{
+            category: categoryEntity,
+            locationId: item.id,
+            title: item.name,
+            address: item.formattedAddressLines.join(', '),
+            latitude: item.coordinate.latitude,
+            longitude: item.coordinate.longitude
+          }
+          await this.locationRepository.save(locationEntity)
+        }
+      })
+    )
+    return data.results;
   }
 
   public async delete(id: number): Promise<LocationEntity> {

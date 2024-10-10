@@ -11,8 +11,6 @@ import { LocationModule } from '@modules/location/location.module';
 import { CategoryModule } from '@modules/category/category.module';
 import { DatabaseModule } from '@modules/database/db.module';
 import { ConfigModule } from '@nestjs/config';
-import { EventGateway } from '@modules/socket/event.gateway'
-import { AssemblyService } from '@modules/services/assembly.service';
 import { MailModule } from '@modules/mailer/mail.module';
 
 @Module({

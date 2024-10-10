@@ -7,6 +7,9 @@ import CategoryEntity from '@modules/database/entities/category.entity';
 
 @Entity({ name: 'locations' })
 class LocationEntity extends BaseEntity {
+  @Column({ nullable: true })
+  locationId: string;
+
   @Column({ nullable: false })
   title: string;
 

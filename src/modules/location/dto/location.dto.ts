@@ -38,6 +38,23 @@ export class CreateLocationDto {
   longitude: string;
 }
 
+export class BulkCreateLocationDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  key: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  userLocation: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  token: string;
+}
+
 export class UpdateLocationDto {
   @IsNumber()
   @IsNotEmpty()

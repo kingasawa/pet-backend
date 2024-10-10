@@ -13,7 +13,7 @@ class CategoryEntity extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   image: string;
 
   @OneToMany(() => LocationEntity, (location) => location.category)
