@@ -22,7 +22,6 @@ import { MailModule } from '@modules/mailer/mail.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
     }),
     AuthModule,
     UserModule,
