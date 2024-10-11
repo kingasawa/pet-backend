@@ -15,7 +15,7 @@ export class LocationService {
     private readonly mapService: MapService
   ) {}
 
-  async findAll(): Promise<LocationEntity[]> {
+  async fetchAll(): Promise<LocationEntity[]> {
     return this.locationRepository.find();
   }
 
@@ -63,7 +63,6 @@ export class LocationService {
     await Promise.all(
       data.results.map(async(item: any) => {
         let categoryEntity: CategoryEntity = await this.categoryRepository.findOne({ where: { title: item.poiCategory } });
-        console.log('categoryEntity', categoryEntity);
         if (!categoryEntity) {
           const category: CategoryEntity = <CategoryEntity>{
             title: item.poiCategory,

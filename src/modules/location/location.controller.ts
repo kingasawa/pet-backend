@@ -2,7 +2,7 @@ import {
   Controller,
   Response,
   Post,
-  Request,
+  Request, Get,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { JwtService } from '@nestjs/jwt';
@@ -12,6 +12,16 @@ export class LocationController {
   constructor(
     private locationService: LocationService,
   ) {}
+
+  @Get('/')
+  async fetchAll(@Request() req, @Response() res) {
+    try {
+      const locations = await this.locationService.fetchAll();
+      return res.status(200).send(locations)
+    } catch (error) {
+      return res.send(error)
+    }
+  }
 
   @Post('/add')
   async add(@Request() req, @Response() res) {
